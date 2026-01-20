@@ -43,62 +43,62 @@ FILES = {
             }
         },
     },
-    # 2021: {
-    #     "filename": "Civil-Service-People-Survey-2021-results-by-all-demographics.ods",
-    #     "sheets": {
-    #         "notes": {
-    #             "sheet_name": "Notes",
-    #             "skiprows": 2
-    #         },
-    #         "data": {
-    #             "sheet_name": "Benchmarks",
-    #             "skiprows": 4,
-    #             "delimiters": "."
-    #         }
-    #     },
-    # },
-    # 2022: {
-    #     "filename": "Civil-Service-People-Survey-2022-results-by-all-demographics.ods",
-    #     "sheets": {
-    #         "notes": {
-    #             "sheet_name": "Notes",
-    #             "skiprows": 2
-    #         },
-    #         "data": {
-    #             "sheet_name": "Benchmarks",
-    #             "skiprows": 4,
-    #             "delimiters": "."
-    #         }
-    #     },
-    # },
-    # 2023: {
-    #     "filename": "Civil-Service-People-Survey-2023-results-by-all-demographic-groups.ods",
-    #     "sheets": {
-    #         "notes": {
-    #             "sheet_name": "Notes",
-    #             "skiprows": 2
-    #         },
-    #         "data": {
-    #             "sheet_name": "Benchmarks",
-    #             "skiprows": 5,
-    #             "delimiters": "."
-    #         }
-    #     },
-    # },
-    # 2024: {
-    #     "filename": "Civil-Service-People-Survey-2024-results-by-all-demographic-groups.ods",
-    #     "sheets": {
-    #         "notes": {
-    #             "sheet_name": "Notes",
-    #             "skiprows": 2
-    #         },
-    #         "data": {
-    #             "sheet_name": "Table_1",
-    #             "skiprows": 5,
-    #             "delimiters": [".", "\n"]
-    #         }
-    #     },
-    # },
+    2021: {
+        "filename": "Civil-Service-People-Survey-2021-results-by-all-demographics.ods",
+        "sheets": {
+            "notes": {
+                "sheet_name": "Notes",
+                "skiprows": 2
+            },
+            "data": {
+                "sheet_name": "Benchmarks",
+                "skiprows": 4,
+                "delimiters": "."
+            }
+        },
+    },
+    2022: {
+        "filename": "Civil-Service-People-Survey-2022-results-by-all-demographics.ods",
+        "sheets": {
+            "notes": {
+                "sheet_name": "Notes",
+                "skiprows": 2
+            },
+            "data": {
+                "sheet_name": "Benchmarks",
+                "skiprows": 4,
+                "delimiters": "."
+            }
+        },
+    },
+    2023: {
+        "filename": "Civil-Service-People-Survey-2023-results-by-all-demographic-groups.ods",
+        "sheets": {
+            "notes": {
+                "sheet_name": "Notes",
+                "skiprows": 2
+            },
+            "data": {
+                "sheet_name": "Benchmarks",
+                "skiprows": 5,
+                "delimiters": "."
+            }
+        },
+    },
+    2024: {
+        "filename": "Civil-Service-People-Survey-2024-results-by-all-demographic-groups.ods",
+        "sheets": {
+            "notes": {
+                "sheet_name": "Notes",
+                "skiprows": 2
+            },
+            "data": {
+                "sheet_name": "Table_1",
+                "skiprows": 5,
+                "delimiters": [".", "\n"]
+            }
+        },
+    },
 }
 DEMOGRAPHIC_VARIABLE_CODE_REPLACEMENTS = {
     "H09_01": "H09",
