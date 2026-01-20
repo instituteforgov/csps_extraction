@@ -2,6 +2,19 @@
 
 Scripts for extracting Civil Service People Survey (CSPS) data.
 
+## Environment variables
+The scripts require the following environment variables to be set:
+
+### Database connection (Azure SQL Database)
+| Variable | Description |
+| -------- | ----------- |
+| `ODBC_DRIVER` | ODBC driver version for SQL Server (e.g., `ODBC Driver 18 for SQL Server`) |
+| `ODBC_SERVER` | SQL Server hostname |
+| `ODBC_DATABASE` | Database name |
+| `ODBC_AUTHENTICATION` | Authentication method (e.g., `ActiveDirectoryServicePrincipal`) |
+| `AZURE_CLIENT_ID` | Azure service principal client ID used for database authentication |
+| `AZURE_CLIENT_SECRET` | Azure service principal client secret used for database authentication |
+
 ## Contributing
 
 This project uses `pre-commit` hooks to ensure code quality. To set up:

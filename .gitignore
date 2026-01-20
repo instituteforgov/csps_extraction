@@ -196,5 +196,7 @@ cython_debug/
 
 # Custom ignores
 todo.txt
+temp.*
+temp_*.*
 
 /temp/*
