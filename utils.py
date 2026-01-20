@@ -282,29 +282,39 @@ def reshape_data(df_data: pd.DataFrame, df_notes: pd.DataFrame, delimiters: str 
 
 def clean_data(
     df: pd.DataFrame,
+    demographic_variable_code_replacements: dict[str, str] | None = None,
+    demographic_variable_name_replacements: dict[str, str] | None = None,
+    lowercase_demographic: str | None = None,
     grade_replacements: dict[str, str] | None = None,
-    lowercase_demographic: str | None = None
 ) -> pd.DataFrame:
     """
     Apply data cleaning operations to the survey data.
 
     Args:
         df: The DataFrame to clean
-        grade_replacements: Dictionary mapping grade values to their standardised replacements
+        demographic_variable_code_replacements: Dictionary mapping demographic variable codes to their standardised replacements
+        demographic_variable_name_replacements: Dictionary mapping demographic variable names to their standardised replacements
         lowercase_demographic: The demographic variable name for which to lowercase all words except the first in Response values
+        grade_replacements: Dictionary mapping grade values to their standardised replacements
 
     Returns:
         Cleaned DataFrame
     """
-    # Apply grade replacements
-    if grade_replacements:
-        df["Response"] = df["Response"].replace(grade_replacements)
-
     # Remove ' (England)' suffix from Response values
     df["Response"] = df["Response"].str.replace(r"\s*\(England\)$", "", regex=True)
+
+    # Apply demographic variable replacements
+    if demographic_variable_code_replacements and "Demographic variable code" in df.columns:
+        df["Demographic variable code"] = df["Demographic variable code"].replace(demographic_variable_code_replacements)
+    if demographic_variable_name_replacements and "Demographic variable name" in df.columns:
+        df["Demographic variable name"] = df["Demographic variable name"].replace(demographic_variable_name_replacements)
 
     # Lowercase all words except the first in Response for a specific demographic variable
     if lowercase_demographic:
         df = lowercase_response_except_first_word(df, lowercase_demographic)
+
+    # Apply grade replacements
+    if grade_replacements:
+        df["Response"] = df["Response"].replace(grade_replacements)
 
     return df

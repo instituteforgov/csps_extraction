@@ -43,62 +43,84 @@ FILES = {
             }
         },
     },
-    2021: {
-        "filename": "Civil-Service-People-Survey-2021-results-by-all-demographics.ods",
-        "sheets": {
-            "notes": {
-                "sheet_name": "Notes",
-                "skiprows": 2
-            },
-            "data": {
-                "sheet_name": "Benchmarks",
-                "skiprows": 4,
-                "delimiters": "."
-            }
-        },
-    },
-    2022: {
-        "filename": "Civil-Service-People-Survey-2022-results-by-all-demographics.ods",
-        "sheets": {
-            "notes": {
-                "sheet_name": "Notes",
-                "skiprows": 2
-            },
-            "data": {
-                "sheet_name": "Benchmarks",
-                "skiprows": 4,
-                "delimiters": "."
-            }
-        },
-    },
-    2023: {
-        "filename": "Civil-Service-People-Survey-2023-results-by-all-demographic-groups.ods",
-        "sheets": {
-            "notes": {
-                "sheet_name": "Notes",
-                "skiprows": 2
-            },
-            "data": {
-                "sheet_name": "Benchmarks",
-                "skiprows": 5,
-                "delimiters": "."
-            }
-        },
-    },
-    2024: {
-        "filename": "Civil-Service-People-Survey-2024-results-by-all-demographic-groups.ods",
-        "sheets": {
-            "notes": {
-                "sheet_name": "Notes",
-                "skiprows": 2
-            },
-            "data": {
-                "sheet_name": "Table_1",
-                "skiprows": 5,
-                "delimiters": [".", "\n"]
-            }
-        },
-    },
+    # 2021: {
+    #     "filename": "Civil-Service-People-Survey-2021-results-by-all-demographics.ods",
+    #     "sheets": {
+    #         "notes": {
+    #             "sheet_name": "Notes",
+    #             "skiprows": 2
+    #         },
+    #         "data": {
+    #             "sheet_name": "Benchmarks",
+    #             "skiprows": 4,
+    #             "delimiters": "."
+    #         }
+    #     },
+    # },
+    # 2022: {
+    #     "filename": "Civil-Service-People-Survey-2022-results-by-all-demographics.ods",
+    #     "sheets": {
+    #         "notes": {
+    #             "sheet_name": "Notes",
+    #             "skiprows": 2
+    #         },
+    #         "data": {
+    #             "sheet_name": "Benchmarks",
+    #             "skiprows": 4,
+    #             "delimiters": "."
+    #         }
+    #     },
+    # },
+    # 2023: {
+    #     "filename": "Civil-Service-People-Survey-2023-results-by-all-demographic-groups.ods",
+    #     "sheets": {
+    #         "notes": {
+    #             "sheet_name": "Notes",
+    #             "skiprows": 2
+    #         },
+    #         "data": {
+    #             "sheet_name": "Benchmarks",
+    #             "skiprows": 5,
+    #             "delimiters": "."
+    #         }
+    #     },
+    # },
+    # 2024: {
+    #     "filename": "Civil-Service-People-Survey-2024-results-by-all-demographic-groups.ods",
+    #     "sheets": {
+    #         "notes": {
+    #             "sheet_name": "Notes",
+    #             "skiprows": 2
+    #         },
+    #         "data": {
+    #             "sheet_name": "Table_1",
+    #             "skiprows": 5,
+    #             "delimiters": [".", "\n"]
+    #         }
+    #     },
+    # },
+}
+DEMOGRAPHIC_VARIABLE_CODE_REPLACEMENTS = {
+    "H09_01": "H09",
+    "H09_02": "H09",
+    "H09_03": "H09",
+    "H09_04": "H09",
+    "H09_05": "H09",
+    "H09_06": "H09",
+    "H09_07": "H09",
+    "H09_08": "H09",
+    "H09_09": "H09",
+    "H09_10": "H09",
+}
+DEMOGRAPHIC_VARIABLE_NAME_REPLACEMENTS = {
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Civil Service Fast Stream": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Apprenticeship Scheme": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Future Leaders Scheme": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Senior Leaders Scheme": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? High Potential Development Scheme": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Individual Development Programme": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Positive Action Pathway": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
+    "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes? Not applicable": "Are you currently on, or have you completed in the last 12 months, any of the following cross-Civil Service accelerated development programmes?",
 }
 GRADE_REPLACEMENTS = {
     "AO/AA": "AA/AO",
@@ -164,8 +186,10 @@ for year, details in FILES.items():
     # Clean data
     df_data = clean_data(
         df_data,
+        demographic_variable_code_replacements=DEMOGRAPHIC_VARIABLE_CODE_REPLACEMENTS,
+        demographic_variable_name_replacements=DEMOGRAPHIC_VARIABLE_NAME_REPLACEMENTS,
+        lowercase_demographic="Which of the following categories best reflects the type of work you do in your main job?",
         grade_replacements=GRADE_REPLACEMENTS,
-        lowercase_demographic="Which of the following categories best reflects the type of work you do in your main job?"
     )
 
     # Check column lengths
