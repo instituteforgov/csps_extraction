@@ -21,7 +21,7 @@ from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
 # %%
 # SET CONSTANTS
-BASE_PATH = "C:/Users/nyep/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
+BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
 
 SURVEY_QUARTER = 4
 
