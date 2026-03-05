@@ -16,7 +16,7 @@ import uuid
 
 import ds_utils.database_operations as dbo
 import pandas as pd
-from sqlalchemy import NVARCHAR, SMALLINT
+from sqlalchemy import DECIMAL, NVARCHAR, SMALLINT
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
 # %%
@@ -117,7 +117,7 @@ df.to_sql(
         "section": NVARCHAR(100),
         "measure": NVARCHAR(20),
         "label": NVARCHAR(300),
-        "value": NVARCHAR(25),
+        "value": DECIMAL(4, 1),
         "answer_format": NVARCHAR(200),
         "based_on": NVARCHAR(200),
         "notes": NVARCHAR(200),
