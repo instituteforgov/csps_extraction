@@ -20,7 +20,7 @@ import pandas as pd
 from sqlalchemy import DECIMAL, INT, NVARCHAR, text
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
-from utils import (
+from csps_extraction.utils import (
     reshape_data,
     clean_data
 )
