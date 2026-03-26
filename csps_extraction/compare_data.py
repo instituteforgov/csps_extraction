@@ -1,13 +1,13 @@
 # %%
 """
     Purpose
-        Compare the output of temp/temp_merge_data.sql with the 'Data.Collated'
+        Compare the output of organisations_data_collated_query.sql with the 'Data.Collated'
         worksheet of 'Organisation working file.xlsx', to validate that the SQL
         enrichment of extracted data matches the original source values.
     Inputs
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data
-        - sql: temp/temp_merge_data.sql
+        - sql: "organisations_data_collated_query.sql"
             - Enriched query over testing.civil_service_people_survey_organisations
     Outputs
         - Printed comparison summary to console
