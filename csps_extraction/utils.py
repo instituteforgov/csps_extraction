@@ -1,5 +1,5 @@
-import re
 import pandas as pd
+import re
 
 
 def strip_column_names(df: pd.DataFrame) -> pd.DataFrame:
