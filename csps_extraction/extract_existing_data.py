@@ -68,11 +68,19 @@ df_csps = df_csps.drop(columns=[
 # Normalise column names to snake_case
 df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=True).str.replace(r"\s+", "_", regex=True).str.strip("_")
 
+# %%
 # Resolve organisation ids
 # Temporally match each row's organisation name and year to testing.organisation.
 # Rows that don't match (e.g. aggregations like "Civil Service benchmark") remain NULL.
 df_organisation = pd.read_sql(
-    "select id, organisation, start_year, start_quarter, end_year, end_quarter from testing.organisation",
+    """select
+        o.id,
+        o.organisation,
+        o.start_year,
+        o.start_quarter,
+        o.end_year,
+        o.end_quarter
+    from testing.organisation o""",
     engine
 )
 
