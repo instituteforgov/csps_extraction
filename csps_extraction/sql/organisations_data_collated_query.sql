@@ -65,11 +65,11 @@ select
     cspso.answer_format [Answer format],
     cspso.based_on [Based on],
     cspso.notes [Notes]
-from testing.civil_service_people_survey_organisations cspso
-    inner join testing.release_number rn on
+from civil_service.civil_service_people_survey_organisations cspso
+    inner join civil_service.release_number rn on
         cspso.year = rn.year and
         rn.quarter = 4
-    left join testing.organisation o on
+    left join civil_service.organisation o on
         cspso.organisation_id = o.id
-    left join testing.vw_latest_organisation lo on
+    left join civil_service.vw_latest_organisation lo on
         o.id = lo.organisation_id

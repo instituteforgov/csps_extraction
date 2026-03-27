@@ -5,10 +5,10 @@
     Inputs
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data
-        - sql: testing.organisation
+        - sql: civil_service.organisation
             - Canonical civil service organisation details
     Outputs
-        - sql: testing.civil_service_people_survey_organisations
+        - sql: civil_service.civil_service_people_survey_organisations
     Notes
         None
 """
@@ -70,7 +70,7 @@ df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=
 
 # %%
 # Resolve organisation ids
-# Temporally match each row's organisation name and year to testing.organisation.
+# Temporally match each row's organisation name and year to civil_service.organisation.
 # Rows that don't match (e.g. aggregations like "Civil Service benchmark") remain NULL.
 df_organisation = pd.read_sql(
     """select
@@ -80,7 +80,7 @@ df_organisation = pd.read_sql(
         o.start_quarter,
         o.end_year,
         o.end_quarter
-    from testing.organisation o""",
+    from civil_service.organisation o""",
     engine
 )
 
@@ -89,7 +89,7 @@ df_csps["organisation_id"] = resolve_org_id(df_csps, df_organisation, quarter_co
 # %%
 # SAVE DATA TO DATABASE
 df_csps.to_sql(
-    schema="testing",
+    schema="civil_service",
     name="civil_service_people_survey_organisations",
     con=engine,
     if_exists="replace",

@@ -8,14 +8,14 @@
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data
         - sql: "organisations_data_collated_query.sql"
-            - Enriched query over testing.civil_service_people_survey_organisations
+            - Enriched query over civil_service.civil_service_people_survey_organisations
     Outputs
         - Printed comparison summary to console
     Notes
         Run extract_existing_data.py first to populate
-        testing.civil_service_people_survey_organisations.
+        civil_service.civil_service_people_survey_organisations.
 
-        The SQL inner-joins to testing.release_number (quarter=4), so rows whose
+        The SQL inner-joins to civil_service.release_number (quarter=4), so rows whose
         year has no release-number entry will appear in Excel but not in the SQL
         output; these are reported as Excel-only rows.
 
