@@ -5,6 +5,8 @@
     Inputs
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data
+        - sql: testing.organisation
+            - Canonical civil service organisation details
     Outputs
         - sql: testing.civil_service_people_survey_organisations
     Notes
