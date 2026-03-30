@@ -2,9 +2,7 @@ select
     cspso.id,
     cspso.headline_category [Headline category],
     cspso.year [Year],
-    cspso.organisation_code [Organisation code],
     cspso.organisation [Organisation],
-    cspso.departmental_group_survey [Departmental group (survey)],
     case
         when o.organisation is null then 'Y'
         else null
