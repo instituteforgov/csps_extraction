@@ -18,6 +18,7 @@
 import os
 
 import ds_utils.database_operations as dbo
+from IPython.display import display
 import pandas as pd
 
 # %%
@@ -93,25 +94,34 @@ for col in value_cols:
     sql_col = f"{col}_sql"
     excel_col = f"{col}_excel"
     if sql_col in rows_in_both.columns and excel_col in rows_in_both.columns:
+        if col == "Value":
+            sql_series = pd.to_numeric(rows_in_both[sql_col], errors="coerce")
+            excel_series = pd.to_numeric(rows_in_both[excel_col], errors="coerce")
+        else:
+            sql_series = rows_in_both[sql_col]
+            excel_series = rows_in_both[excel_col]
         match_mask = (
-            (rows_in_both[sql_col] == rows_in_both[excel_col])
+            (sql_series == excel_series)
             | (rows_in_both[sql_col].isna() & rows_in_both[excel_col].isna())
         )
         if (~match_mask).any():
             mismatch_masks[col] = ~match_mask
 
 if mismatch_masks:
-    print("Columns with value mismatches in matched rows:")
-    for col, mask in mismatch_masks.items():
-        print(f"  {col}: {int(mask.sum())} mismatch(es)")
-    print()
+    display({col: int(mask.sum()) for col, mask in mismatch_masks.items()})
     for col, mask in mismatch_masks.items():
         sql_col = f"{col}_sql"
         excel_col = f"{col}_excel"
-        preview = rows_in_both.loc[mask, key_cols + [sql_col, excel_col]]
+        if col == "Value":
+            preview = rows_in_both.loc[mask, key_cols + [sql_col, excel_col]].reset_index(drop=True)
+        else:
+            preview = (
+                rows_in_both.loc[mask, ["Year", "Organisation", sql_col, excel_col]]
+                .drop_duplicates()
+                .reset_index(drop=True)
+            )
         print(f"Mismatches in '{col}':")
-        print(preview.to_string(index=False))
-        print()
+        display(preview)
 else:
     print("No value mismatches in matched rows")
 
