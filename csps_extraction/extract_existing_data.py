@@ -10,7 +10,7 @@
     Outputs
         - sql: civil_service.civil_service_people_survey_organisations
     Notes
-        None
+        - Replaces existing data in `civil_service.civil_service_people_survey_organisations`
 """
 
 import os
@@ -26,7 +26,6 @@ from csps_extraction.utils import resolve_org_id
 # %%
 # SET CONSTANTS
 BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
-
 SURVEY_QUARTER = 4
 
 # %%
@@ -75,7 +74,7 @@ df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=
 df_organisation = pd.read_sql(
     """select
         o.id,
-        o.organisation,
+        o.name,
         o.start_year,
         o.start_quarter,
         o.end_year,

@@ -331,7 +331,7 @@ def resolve_org_id(
 
     Args:
         df: Source DataFrame containing the rows to resolve.
-        df_org_id: Reference DataFrame with columns id, organisation, start_year,
+        df_org_id: Reference DataFrame with columns id, name, start_year,
             start_quarter, end_year, end_quarter.
         org_col: Column in df containing the organisation name.
         year_col: Column in df containing the survey year.
@@ -342,7 +342,7 @@ def resolve_org_id(
         Series indexed like df, with the resolved UUID where a unique active
         organisation record was found, and NaN where unresolvable.
     """
-    lookup = df[[org_col, year_col]].rename(columns={org_col: "organisation", year_col: "year"})
+    lookup = df[[org_col, year_col]].rename(columns={org_col: "name", year_col: "year"})
     if isinstance(quarter_col, str):
         lookup["quarter"] = df[quarter_col]
     else:
@@ -352,8 +352,8 @@ def resolve_org_id(
         .rename_axis("_orig_idx")
         .reset_index()
         .merge(
-            df_org_id[["id", "organisation", "start_year", "start_quarter", "end_year", "end_quarter"]],
-            on="organisation",
+            df_org_id[["id", "name", "start_year", "start_quarter", "end_year", "end_quarter"]],
+            on="name",
             how="left",
         )
     )
