@@ -38,7 +38,7 @@ select
     cspso.year [Year],
     case
         when cspso.organisation_name = 'Department for Culture, Media and Sport' and o.end_year = 2017 then 'Department for Culture, Media and Sport - 2017 iteration'
-        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o.start_year = 2024 then 'Department for Culture, Media and Sport - 2024 iteration'
+        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o.start_year = 2023 then 'Department for Culture, Media and Sport - 2023 iteration'
         when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o.start_year = 2018 then 'Ministry of Housing, Communities & Local Government - 2018 iteration'
         when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o.start_year = 2024 then 'Ministry of Housing, Communities & Local Government - 2024 iteration'
         else cspso.organisation_name
