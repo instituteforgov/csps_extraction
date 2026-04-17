@@ -70,6 +70,9 @@ df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=
 # Rename 'organisation' to 'organisation_name'
 df_csps = df_csps.rename(columns={"organisation": "organisation_name"})
 
+# Drop ' - <yyyy> iteration' strings from organisation names that have been reused (e.g. "Department for Culture, Media and Sport - 2017 iteration" becomes "Department for Culture, Media and Sport")
+df_csps["organisation_name"] = df_csps["organisation_name"].str.replace(r"\s*-\s*\d{4}\s*iteration\s*", "", regex=True)
+
 # %%
 # Resolve organisation ids
 # Temporally match each row's organisation name and year to civil_service.organisation.
