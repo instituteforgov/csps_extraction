@@ -1,7 +1,37 @@
--- NB: case statements do two things:
-    -- 1. Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
-    -- 2. (Specific to the CSPS organisations data) Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
--- NB: Temporal joins treat CSPS data as quarter 4 of the year. start/end year/quarters in civil_service.organisation are inclusive and non-overlapping, and either bound may be null (meaning no bound in that direction).
+-- Replicates the collated data for the CSPS organisations data working file
+-- NB: This turns all dates into 'periods', to facilitate temporal joins. These are defined as year * 4 + quarter, so e.g. 2020 Q4 becomes 2020 * 4 + 4 = 8084, with nulls set to 0 for start_period and the maximum integer that can be held in a SQL int column for end_period
+-- NB: survey_period in the CSPS data is set to year * 4 + 4, because all CSPS data is from quarter 4 of each year
+-- NB: Temporal joins use _between_, which includes both endpoints, because start/end year/quarters in civil_service.organisation are inclusive and non-overlapping. I.e. if an organisation ends in period N, it's successor starts in period N + 1
+-- NB: `case` statements do two things:
+    -- 1. `Organisation` column: Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
+    -- 2. (Specific to the CSPS organisations data) `Departmental group`, `Latest organisation`, `Latest IfG departmental group` columns: Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
+with cspso as (
+    select
+        *,
+        year * 4 + 4 survey_period
+    from civil_service.civil_service_people_survey_organisations
+),
+o as (
+    select
+        o.id,
+        vodg.organisation_name,
+        o.type,
+        vodg.departmental_group_id,
+        vodg.departmental_group_name,
+        vodg.departmental_group_short_name,
+        vodg.ifg_departmental_group_id,
+        vodg.ifg_departmental_group_name,
+        vodg.ifg_departmental_group_short_name,
+        vodg.start_year,
+        vodg.start_quarter,
+        vodg.end_year,
+        vodg.end_quarter,
+        isnull(vodg.start_year * 4 + vodg.start_quarter, 0) start_period,
+        isnull(vodg.end_year * 4 + vodg.end_quarter, 2147483647) end_period
+    from civil_service.organisation o
+        inner join civil_service.vw_organisation_departmental_group vodg on
+            o.id = vodg.organisation_id
+)
 select
     cspso.id,
     cspso.headline_category [Headline category],
@@ -30,7 +60,7 @@ select
         when 'National Offender Management Service group (including agencies)' then 'MoJ'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
-        else vodg.departmental_group_short_name
+        else o.departmental_group_short_name
     end [Departmental group],
     case
         when o.type in ('Aggregation', 'Disaggregation') then 'Combination'
@@ -77,17 +107,9 @@ select
     cspso.answer_format [Answer format],
     cspso.based_on [Based on],
     cspso.notes [Notes]
-from civil_service.civil_service_people_survey_organisations cspso
-    left join civil_service.organisation o on
+from cspso
+    left join o on
         cspso.organisation_id = o.id and
-        (o.start_year is null or (cspso.year * 4 + 4) >= (o.start_year * 4 + o.start_quarter)) and
-        (o.end_year is null or (cspso.year * 4 + 4) <= (o.end_year * 4 + o.end_quarter))
-    left join civil_service.vw_organisation_departmental_group vodg on
-        o.id = vodg.organisation_id and
-        (vodg.start_year is null or (cspso.year * 4 + 4) >= (vodg.start_year * 4 + vodg.start_quarter)) and
-        (vodg.end_year is null or (cspso.year * 4 + 4) <= (vodg.end_year * 4 + vodg.end_quarter))
+        cspso.survey_period between o.start_period and o.end_period
     left join civil_service.vw_organisation_latest vol on
-        vodg.ifg_departmental_group_id = vol.organisation_id
-order by
-    cspso.year,
-    cspso.organisation_name
+        o.ifg_departmental_group_id = vol.organisation_id
