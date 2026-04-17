@@ -12,7 +12,7 @@ with cspso as (
         year * 4 + 4 survey_period
     from civil_service.civil_service_people_survey_organisations
 ),
-o as (
+o_vodg as (
     select
         o.id,
         vodg.organisation_name,
@@ -35,14 +35,14 @@ select
     cspso.headline_category [Headline category],
     cspso.year [Year],
     case
-        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o.end_year = 2017 then 'Department for Culture, Media and Sport - 2017 iteration'
-        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o.start_year = 2023 then 'Department for Culture, Media and Sport - 2023 iteration'
-        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o.start_year = 2018 then 'Ministry of Housing, Communities & Local Government - 2018 iteration'
-        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o.start_year = 2024 then 'Ministry of Housing, Communities & Local Government - 2024 iteration'
+        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vodg.end_year = 2017 then 'Department for Culture, Media and Sport - 2017 iteration'
+        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vodg.start_year = 2023 then 'Department for Culture, Media and Sport - 2023 iteration'
+        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vodg.start_year = 2018 then 'Ministry of Housing, Communities & Local Government - 2018 iteration'
+        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vodg.start_year = 2024 then 'Ministry of Housing, Communities & Local Government - 2024 iteration'
         else cspso.organisation_name
     end [Organisation],
     case
-        when o.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
+        when o_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
         else null
     end [Organisation aggregation?],
     case cspso.organisation_name
@@ -58,11 +58,11 @@ select
         when 'National Offender Management Service group (including agencies)' then 'MoJ'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
-        else o.ifg_departmental_group_short_name
+        else o_vodg.ifg_departmental_group_short_name
     end [Departmental group],
     case
-        when o.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
-        else o.type
+        when o_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
+        else o_vodg.type
     end [Organisation type],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
@@ -106,9 +106,9 @@ select
     cspso.based_on [Based on],
     cspso.notes [Notes]
 from cspso
-    left join o on
-        cspso.organisation_id = o.id and
-        cspso.survey_period between o.start_period and o.end_period
+    left join o_vodg on
+        cspso.organisation_id = o_vodg.id and
+        cspso.survey_period between o_vodg.start_period and o_vodg.end_period
     left join civil_service.vw_organisation_latest vol1 on
         o.id = vol1.organisation_id
     left join civil_service.vw_organisation_latest vol2 on
