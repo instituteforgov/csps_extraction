@@ -17,9 +17,6 @@ o as (
         o.id,
         vodg.organisation_name,
         o.type,
-        vodg.departmental_group_id,
-        vodg.departmental_group_name,
-        vodg.departmental_group_short_name,
         vodg.ifg_departmental_group_id,
         vodg.ifg_departmental_group_name,
         vodg.ifg_departmental_group_short_name,
@@ -45,7 +42,7 @@ select
         else cspso.organisation_name
     end [Organisation],
     case
-        when o.type in ('Aggregation', 'Disaggregation') then 'Y'
+        when o.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
         else null
     end [Organisation aggregation?],
     case cspso.organisation_name
@@ -61,10 +58,10 @@ select
         when 'National Offender Management Service group (including agencies)' then 'MoJ'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
-        else o.departmental_group_short_name
+        else o.ifg_departmental_group_short_name
     end [Departmental group],
     case
-        when o.type in ('Aggregation', 'Disaggregation') then 'Combination'
+        when o.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
         else o.type
     end [Organisation type],
     case cspso.organisation_name
@@ -80,7 +77,7 @@ select
         when 'National Offender Management Service group (including agencies)' then 'National Offender Management Service group (including agencies)'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'UK Statistics Authority (excluding Office for National Statistics)'
-        else vol.latest_organisation_name
+        else vol1.latest_organisation_name
     end [Latest organisation],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
@@ -96,9 +93,9 @@ select
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
         else iif(
-            vol.latest_organisation_name = 'Indeterminate',
-            vol.latest_determinate_organisation_short_name,
-            vol.latest_organisation_short_name
+            vol2.latest_organisation_name = 'Indeterminate',
+            vol2.latest_determinate_organisation_short_name,
+            vol2.latest_organisation_short_name
         )
     end [Latest IfG departmental group],
     cspso.section [Section],
@@ -112,5 +109,7 @@ from cspso
     left join o on
         cspso.organisation_id = o.id and
         cspso.survey_period between o.start_period and o.end_period
-    left join civil_service.vw_organisation_latest vol on
-        o.ifg_departmental_group_id = vol.organisation_id
+    left join civil_service.vw_organisation_latest vol1 on
+        o.id = vol1.organisation_id
+    left join civil_service.vw_organisation_latest vol2 on
+        o.ifg_departmental_group_id = vol2.organisation_id
