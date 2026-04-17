@@ -73,9 +73,13 @@ print(f"Columns only in Excel: {cols_excel_only}")
 print(f"Columns only in SQL: {cols_sql_only}")
 
 # %%
-# Compare rows, matching on year, organisation, label, ignoring release_number column from Excel and id column from SQL
-key_cols = ["Year", "Organisation", "Label"]
-compare_cols = cols_in_both - {"Release number", "id"}
+# Compare keys (i.e. values which uniquely identify rows)
+key_cols = ["Headline category", "Year", "Organisation", "Section", "Measure", "Label", "Answer format"]
+
+assert len(df_sql) == len(df_excel), (
+    f"Row count mismatch before merge: SQL has {len(df_sql)} rows, Excel has {len(df_excel)} rows."
+)
+
 df_merged = df_sql.merge(df_excel, on=key_cols, how="outer", suffixes=("_sql", "_excel"), indicator=True)
 rows_in_both = df_merged[df_merged["_merge"] == "both"]
 rows_excel_only = df_merged[df_merged["_merge"] == "right_only"]
@@ -83,5 +87,44 @@ rows_sql_only = df_merged[df_merged["_merge"] == "left_only"]
 print(f"Rows in both sources: {len(rows_in_both)}")
 print(f"Rows only in Excel: {len(rows_excel_only)}")
 print(f"Rows only in SQL: {len(rows_sql_only)}")
+
+assert len(df_merged) == len(df_sql), (
+    f"Merged row count ({len(df_merged)}) differs from source row count ({len(df_sql)}). "
+    f"{len(rows_excel_only)} Excel-only and {len(rows_sql_only)} SQL-only rows."
+)
+
+# %%
+# Compare values for matched rows
+value_cols = [col for col in df_excel.columns if col in cols_in_both and col not in key_cols]
+
+mismatch_masks = {}
+for col in value_cols:
+    sql_col = f"{col}_sql"
+    excel_col = f"{col}_excel"
+    if sql_col in rows_in_both.columns and excel_col in rows_in_both.columns:
+        match_mask = (
+            (rows_in_both[sql_col] == rows_in_both[excel_col])
+            | (rows_in_both[sql_col].isna() & rows_in_both[excel_col].isna())
+        )
+        if (~match_mask).any():
+            mismatch_masks[col] = ~match_mask
+
+if mismatch_masks:
+    print("Columns with value mismatches in matched rows:")
+    for col, mask in mismatch_masks.items():
+        print(f"  {col}: {int(mask.sum())} mismatch(es)")
+    print()
+    for col, mask in mismatch_masks.items():
+        sql_col = f"{col}_sql"
+        excel_col = f"{col}_excel"
+        preview = rows_in_both.loc[mask, key_cols + [sql_col, excel_col]]
+        print(f"Mismatches in '{col}':")
+        print(preview.to_string(index=False))
+        print()
+else:
+    print("No value mismatches in matched rows")
+
+# %%
+len(df_excel), len(df_sql)
 
 # %%
