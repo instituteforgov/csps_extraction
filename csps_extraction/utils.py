@@ -323,7 +323,7 @@ def clean_data(
 def resolve_org_id(
     df: pd.DataFrame,
     df_org_id: pd.DataFrame,
-    org_col: str = "organisation",
+    org_col: str = "organisation_name",
     year_col: str = "year",
     quarter_col: str | int = "quarter",
 ) -> pd.Series:

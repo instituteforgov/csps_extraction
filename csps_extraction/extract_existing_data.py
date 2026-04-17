@@ -67,6 +67,9 @@ df_csps = df_csps.drop(columns=[
 # Normalise column names to snake_case
 df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=True).str.replace(r"\s+", "_", regex=True).str.strip("_")
 
+# Rename 'organisation' to 'organisation_name'
+df_csps = df_csps.rename(columns={"organisation": "organisation_name"})
+
 # %%
 # Resolve organisation ids
 # Temporally match each row's organisation name and year to civil_service.organisation.
@@ -83,7 +86,11 @@ df_organisation = pd.read_sql(
     engine
 )
 
-df_csps["organisation_id"] = resolve_org_id(df_csps, df_organisation, quarter_col=SURVEY_QUARTER)
+df_csps.insert(
+    df_csps.columns.get_loc("organisation_code"),
+    "organisation_id",
+    resolve_org_id(df_csps, df_organisation, quarter_col=SURVEY_QUARTER)
+)
 
 # %%
 # SAVE DATA TO DATABASE
@@ -98,9 +105,9 @@ df_csps.to_sql(
         "id": UNIQUEIDENTIFIER,
         "headline_category": NVARCHAR(10),
         "year": SMALLINT,
-        "organisation_code": NVARCHAR(100),
         "organisation_id": UNIQUEIDENTIFIER,
-        "organisation": NVARCHAR(200),
+        "organisation_code": NVARCHAR(100),
+        "organisation_name": NVARCHAR(200),
         "departmental_group_survey": NVARCHAR(200),
         "section": NVARCHAR(100),
         "measure": NVARCHAR(20),
