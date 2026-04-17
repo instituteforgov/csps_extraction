@@ -2,6 +2,7 @@
 -- NB: This turns all dates into 'periods', to facilitate temporal joins. These are defined as year * 4 + quarter, so e.g. 2020 Q4 becomes 2020 * 4 + 4 = 8084, with nulls set to 0 for start_period and the maximum integer that can be held in a SQL int column for end_period
 -- NB: survey_period in the CSPS data is set to year * 4 + 4, because all CSPS data is from quarter 4 of each year
 -- NB: Temporal joins use _between_, which includes both endpoints, because start/end year/quarters in civil_service.organisation are inclusive and non-overlapping. I.e. if an organisation ends in period N, it's successor starts in period N + 1
+-- NB: Join between `civil_service.organisation` and `civil_service.vw_organisation_departmental_group` needs to be a left join as organisation aggregations and disaggregations don't feature in `civil_service.vw_organisation_departmental_group`, by design
 -- NB: `case` statements do two things:
     -- 1. `Organisation` column: Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
     -- 2. (Specific to the CSPS organisations data) `Departmental group`, `Latest organisation`, `Latest IfG departmental group` columns: Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
@@ -29,7 +30,7 @@ o as (
         isnull(vodg.start_year * 4 + vodg.start_quarter, 0) start_period,
         isnull(vodg.end_year * 4 + vodg.end_quarter, 2147483647) end_period
     from civil_service.organisation o
-        inner join civil_service.vw_organisation_departmental_group vodg on
+        left join civil_service.vw_organisation_departmental_group vodg on
             o.id = vodg.organisation_id
 )
 select
