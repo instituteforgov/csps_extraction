@@ -52,6 +52,9 @@ df_sql = pd.read_sql(sql, engine)
 # Drop rows where 'Organisation' is blank
 df_excel = df_excel.dropna(subset=["Organisation"])
 
+# Replace ' - sub-unit' strings with ' sub-unit' in organisation names, to match improvements made to the canonical organisation data
+df_excel["Organisation"] = df_excel["Organisation"].str.replace(r"\s*-\s*sub-unit", " sub-unit", regex=True)
+
 # %%
 # COMPARE DATA
 # Compare columns
