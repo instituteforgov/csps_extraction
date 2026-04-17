@@ -110,6 +110,6 @@ from cspso
         cspso.organisation_id = o_vodg.id and
         cspso.survey_period between o_vodg.start_period and o_vodg.end_period
     left join civil_service.vw_organisation_latest vol1 on
-        o.id = vol1.organisation_id
+        o_vodg.id = vol1.organisation_id
     left join civil_service.vw_organisation_latest vol2 on
-        o.ifg_departmental_group_id = vol2.organisation_id
+        o_vodg.ifg_departmental_group_id = vol2.organisation_id
