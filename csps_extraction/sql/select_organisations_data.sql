@@ -1,6 +1,7 @@
 -- NB: case statements do two things:
     -- 1. Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
     -- 2. (Specific to the CSPS organisations data) Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
+-- NB: Temporal joins treat CSPS data as quarter 4 of the year. start/end year/quarters in civil_service.organisation are inclusive and non-overlapping, and either bound may be null (meaning no bound in that direction).
 select
     cspso.id,
     cspso.headline_category [Headline category],
@@ -13,8 +14,7 @@ select
         else cspso.organisation_name
     end [Organisation],
     case
-        when o.name = 'All employees' then 'Y'
-        when o.name is null then 'Y'
+        when o.type in ('Aggregation', 'Disaggregation') then 'Y'
         else null
     end [Organisation aggregation?],
     case cspso.organisation_name
@@ -33,7 +33,7 @@ select
         else vodg.departmental_group_short_name
     end [Departmental group],
     case
-        when o.name is null then 'Combination'
+        when o.type in ('Aggregation', 'Disaggregation') then 'Combination'
         else o.type
     end [Organisation type],
     case cspso.organisation_name
@@ -79,8 +79,15 @@ select
     cspso.notes [Notes]
 from civil_service.civil_service_people_survey_organisations cspso
     left join civil_service.organisation o on
-        cspso.organisation_id = o.id
+        cspso.organisation_id = o.id and
+        (o.start_year is null or (cspso.year * 4 + 4) >= (o.start_year * 4 + o.start_quarter)) and
+        (o.end_year is null or (cspso.year * 4 + 4) <= (o.end_year * 4 + o.end_quarter))
     left join civil_service.vw_organisation_departmental_group vodg on
-        o.id = vodg.organisation_id
+        o.id = vodg.organisation_id and
+        (vodg.start_year is null or (cspso.year * 4 + 4) >= (vodg.start_year * 4 + vodg.start_quarter)) and
+        (vodg.end_year is null or (cspso.year * 4 + 4) <= (vodg.end_year * 4 + vodg.end_quarter))
     left join civil_service.vw_organisation_latest vol on
         vodg.ifg_departmental_group_id = vol.organisation_id
+order by
+    cspso.year,
+    cspso.organisation_name
