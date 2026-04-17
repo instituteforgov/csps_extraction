@@ -12,16 +12,7 @@
     Outputs
         - Printed comparison summary to console
     Notes
-        Run extract_existing_data.py first to populate
-        civil_service.civil_service_people_survey_organisations.
-
-        The SQL inner-joins to civil_service.release_number (quarter=4), so rows whose
-        year has no release-number entry will appear in Excel but not in the SQL
-        output; these are reported as Excel-only rows.
-
-        The SQL selects o.departmental_group (raw) and then a case-expression also
-        aliased departmental_group (the adjusted value). The raw column is renamed
-        to departmental_group_raw automatically.
+        None
 """
 
 import os
@@ -123,8 +114,5 @@ if mismatch_masks:
         print()
 else:
     print("No value mismatches in matched rows")
-
-# %%
-len(df_excel), len(df_sql)
 
 # %%
