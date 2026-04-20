@@ -115,7 +115,7 @@ df_csps.to_sql(
         "section": NVARCHAR(100),
         "measure": NVARCHAR(20),
         "label": NVARCHAR(300),
-        "value": DECIMAL(6, 3),
+        "value": DECIMAL(9, 6),
         "answer_format": NVARCHAR(200),
         "based_on": NVARCHAR(200),
         "notes": NVARCHAR(200),
