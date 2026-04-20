@@ -100,13 +100,17 @@ for col in value_cols:
         if col == "Value":
             sql_series = pd.to_numeric(rows_in_both[sql_col], errors="coerce")
             excel_series = pd.to_numeric(rows_in_both[excel_col], errors="coerce")
+            match_mask = (
+                (sql_series - excel_series).abs().lt(1e-9)
+                | (sql_series.isna() & excel_series.isna())
+            )
         else:
             sql_series = rows_in_both[sql_col]
             excel_series = rows_in_both[excel_col]
-        match_mask = (
-            (sql_series == excel_series)
-            | (rows_in_both[sql_col].isna() & rows_in_both[excel_col].isna())
-        )
+            match_mask = (
+                (sql_series == excel_series)
+                | (rows_in_both[sql_col].isna() & rows_in_both[excel_col].isna())
+            )
         if (~match_mask).any():
             mismatch_masks[col] = ~match_mask
 
