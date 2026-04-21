@@ -12,7 +12,12 @@
     Outputs
         - Printed comparison summary to console
     Notes
-        None
+        - This handles several expected differences between the two datasets. Namely that:
+            - Certain columns only exist in one dataset:
+                - Excel: 'Organisation code', 'Departmental group (survey)', 'Release number'
+                - SQL: 'id', 'IfG core department'
+            - Excel data has ' - <yyyy> iteration' suffixes in the Organisation and Latest organisation columns for certain organisations
+            - For organisations that have left the civil service, Excel data gives Organisation as the value for Latest organisation, whereas SQL data gives 'Non-civil service'
 """
 
 import os
@@ -51,9 +56,6 @@ df_sql = pd.read_sql(sql, engine)
 # EDIT DATA
 # Drop rows where 'Organisation' is blank
 df_excel = df_excel.dropna(subset=["Organisation"])
-
-# Replace ' - sub-unit' strings with ' sub-unit' in organisation names, to match improvements made to the canonical organisation data
-df_excel["Organisation type"] = df_excel["Organisation type"].str.replace(r"\s*-\s*sub-unit", " sub-unit", regex=True)
 
 
 # Add ' - <yyyy> iteration' suffixes to the Organisation column of df_sql
