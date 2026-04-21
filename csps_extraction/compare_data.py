@@ -56,7 +56,7 @@ df_excel = df_excel.dropna(subset=["Organisation"])
 df_excel["Organisation type"] = df_excel["Organisation type"].str.replace(r"\s*-\s*sub-unit", " sub-unit", regex=True)
 
 
-# Add ' - <yyyy> iteration' suffixes
+# Add ' - <yyyy> iteration' suffixes to the Organisation column of df_sql
 def add_iteration_suffix(row: pd.Series, column: str = "Organisation") -> str:
     """
         Add iteration suffixes to 'Organisation' values based on the following rules
@@ -84,7 +84,6 @@ def add_iteration_suffix(row: pd.Series, column: str = "Organisation") -> str:
     return row[column]
 
 
-# Apply the function to the Organisation column of df_sql
 df_sql["Organisation"] = df_sql.apply(add_iteration_suffix, column="Organisation", axis=1)
 
 # Apply fixed latest-iteration suffixes to the Latest organisation column of df_sql
@@ -93,6 +92,12 @@ latest_org_suffixes = {
     "Ministry of Housing, Communities & Local Government": "Ministry of Housing, Communities & Local Government - 2024 iteration",
 }
 df_sql["Latest organisation"] = df_sql["Latest organisation"].map(lambda x: latest_org_suffixes.get(x, x))
+
+# Set Latest organisation to Organisation where Latest organisation is 'Non-civil service'
+df_sql["Latest organisation"] = df_sql.apply(
+    lambda row: row["Organisation"] if row["Latest organisation"] == "Non-civil service" else row["Latest organisation"],
+    axis=1,
+)
 
 # %%
 # COMPARE DATA
