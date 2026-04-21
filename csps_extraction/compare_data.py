@@ -60,9 +60,9 @@ df_excel["Organisation type"] = df_excel["Organisation type"].str.replace(r"\s*-
 # Compare columns
 df_excel_cols = set(df_excel.columns)
 df_sql_cols = set(df_sql.columns)
-cols_in_both = df_excel_cols.intersection(df_sql_cols)
-cols_excel_only = df_excel_cols - df_sql_cols
-cols_sql_only = df_sql_cols - df_excel_cols
+cols_in_both = [col for col in df_excel.columns if col in df_sql_cols]
+cols_excel_only = [col for col in df_excel.columns if col not in df_sql_cols]
+cols_sql_only = [col for col in df_sql.columns if col not in df_excel_cols]
 print(f"Columns in both sources: {cols_in_both}")
 print(f"Columns only in Excel: {cols_excel_only}")
 print(f"Columns only in SQL: {cols_sql_only}")
