@@ -12,11 +12,12 @@ with cspso as (
         year * 4 + 4 survey_period
     from civil_service.civil_service_people_survey_organisations
 ),
-o_vodg as (
+o_vicd_vodg as (
     select
         o.id,
         vodg.organisation_name,
         o.type,
+        vicd.is_ifg_core_department,
         vodg.ifg_departmental_group_id,
         vodg.ifg_departmental_group_name,
         vodg.ifg_departmental_group_short_name,
@@ -27,6 +28,8 @@ o_vodg as (
         isnull(vodg.start_year * 4 + vodg.start_quarter, 0) start_period,
         isnull(vodg.end_year * 4 + vodg.end_quarter, 2147483647) end_period
     from civil_service.organisation o
+        left join civil_service.vw_ifg_core_departments vicd on
+            o.id = vicd.organisation_id
         left join civil_service.vw_organisation_departmental_group vodg on
             o.id = vodg.organisation_id
 )
@@ -35,14 +38,14 @@ select
     cspso.headline_category [Headline category],
     cspso.year [Year],
     case
-        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vodg.end_year = 2017 then 'Department for Culture, Media and Sport - 2017 iteration'
-        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vodg.start_year = 2023 then 'Department for Culture, Media and Sport - 2023 iteration'
-        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vodg.start_year = 2018 then 'Ministry of Housing, Communities & Local Government - 2018 iteration'
-        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vodg.start_year = 2024 then 'Ministry of Housing, Communities & Local Government - 2024 iteration'
+        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vicd_vodg.end_year = 2017 then 'Department for Culture, Media and Sport - 2017 iteration'
+        when cspso.organisation_name = 'Department for Culture, Media and Sport' and o_vicd_vodg.start_year = 2023 then 'Department for Culture, Media and Sport - 2023 iteration'
+        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vicd_vodg.start_year = 2018 then 'Ministry of Housing, Communities & Local Government - 2018 iteration'
+        when cspso.organisation_name = 'Ministry of Housing, Communities & Local Government' and o_vicd_vodg.start_year = 2024 then 'Ministry of Housing, Communities & Local Government - 2024 iteration'
         else cspso.organisation_name
     end [Organisation],
     case
-        when o_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
         else null
     end [Organisation aggregation?],
     case cspso.organisation_name
@@ -58,12 +61,13 @@ select
         when 'National Offender Management Service group (including agencies)' then 'MoJ'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
-        else o_vodg.ifg_departmental_group_short_name
+        else o_vicd_vodg.ifg_departmental_group_short_name
     end [Departmental group],
     case
-        when o_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
-        else o_vodg.type
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
+        else o_vicd_vodg.type
     end [Organisation type],
+    o_vicd_vodg.is_ifg_core_department [IfG core department],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
         when 'Cabinet Office group (including agencies)' then 'Cabinet Office group (including agencies)'
@@ -106,10 +110,10 @@ select
     cspso.based_on [Based on],
     cspso.notes [Notes]
 from cspso
-    left join o_vodg on
-        cspso.organisation_id = o_vodg.id and
-        cspso.survey_period between o_vodg.start_period and o_vodg.end_period
+    left join o_vicd_vodg on
+        cspso.organisation_id = o_vicd_vodg.id and
+        cspso.survey_period between o_vicd_vodg.start_period and o_vicd_vodg.end_period
     left join civil_service.vw_organisation_latest vol1 on
-        o_vodg.id = vol1.organisation_id
+        o_vicd_vodg.id = vol1.organisation_id
     left join civil_service.vw_organisation_latest vol2 on
-        o_vodg.ifg_departmental_group_id = vol2.organisation_id
+        o_vicd_vodg.ifg_departmental_group_id = vol2.organisation_id
