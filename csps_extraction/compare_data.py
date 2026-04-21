@@ -55,6 +55,39 @@ df_excel = df_excel.dropna(subset=["Organisation"])
 # Replace ' - sub-unit' strings with ' sub-unit' in organisation names, to match improvements made to the canonical organisation data
 df_excel["Organisation type"] = df_excel["Organisation type"].str.replace(r"\s*-\s*sub-unit", " sub-unit", regex=True)
 
+
+# Add ' - <yyyy> iteration' suffixes
+def add_iteration_suffix(row: pd.Series, column: str = "Organisation") -> str:
+    """
+        Add iteration suffixes to 'Organisation' values based on the following rules
+
+        Args:
+            row (pd.Series): A row of the DataFrame containing the specified column and 'Year' columns
+            column (str): The name of the column to check for organisation names (default is 'Organisation')
+
+        Returns:
+            str: The modified 'Organisation' value with iteration suffix if applicable, otherwise the original 'Organisation' value
+
+        Notes:
+            We are slightly inconsistent in how we defined these names, explaining why a mix of <= and >= are used
+    """
+    if row[column] == "Department for Culture, Media and Sport":
+        if row["Year"] <= 2017:
+            return "Department for Culture, Media and Sport - 2017 iteration"
+        elif row["Year"] >= 2023:
+            return "Department for Culture, Media and Sport - 2023 iteration"
+    elif row[column] == "Ministry of Housing, Communities & Local Government":
+        if row["Year"] >= 2018 and row["Year"] <= 2021:
+            return "Ministry of Housing, Communities & Local Government - 2018 iteration"
+        elif row["Year"] >= 2024:
+            return "Ministry of Housing, Communities & Local Government - 2024 iteration"
+    return row[column]
+
+
+# Apply the function to Organisation and Latest organisation columns of df_sql
+df_sql["Organisation"] = df_sql.apply(add_iteration_suffix, column="Organisation", axis=1)
+df_sql["Latest organisation"] = df_sql.apply(add_iteration_suffix, column="Latest organisation", axis=1)
+
 # %%
 # COMPARE DATA
 # Compare columns
