@@ -76,7 +76,11 @@ select
         when 'National Offender Management Service group (including agencies)' then 'National Offender Management Service group (including agencies)'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'UK Statistics Authority (excluding Office for National Statistics)'
-        else vol1.latest_organisation_name
+        else iif(
+            vol1.latest_organisation_name = 'Indeterminate',
+            vol1.latest_determinate_organisation_name,
+            vol1.latest_organisation_name
+        )
     end [Latest organisation],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
