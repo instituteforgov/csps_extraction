@@ -1,0 +1,5 @@
+ds_utils @ git+https://github.com/philipnye/ds_utils@8df63ddf92ace9f7bc16fd5ef8598641f4c4b0ec
+openpyxl==3.1.5
+pandas==3.0.2
+pyodbc==5.2.0
+SQLAlchemy==2.0.44

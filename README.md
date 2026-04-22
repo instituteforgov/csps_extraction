@@ -15,7 +15,14 @@ Scripts for extracting Civil Service People Survey (CSPS) data.
 ├── .gitignore
 ├── .pre-commit-config.yaml
 ├── LICENSE
-└── README.md
+├── README.md
+└── requirements.txt
+```
+
+## Installation
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Scripts
