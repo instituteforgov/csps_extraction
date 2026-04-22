@@ -7,6 +7,7 @@ Scripts for extracting Civil Service People Survey (CSPS) data.
 ```
 ├── csps_extraction/
 │   ├── sql/
+│   │   ├── compare_organisations_data.sql
 │   │   ├── select_organisations_data.sql
 │   ├── compare_data.py
 │   ├── extract_existing_data.py
@@ -22,8 +23,9 @@ Scripts for extracting Civil Service People Survey (CSPS) data.
 | File | Description |
 | ---- | ----------- |
 | `csps_extraction/extract_existing_data.py` | Reads existing CSPS data and saves to database. |
-| `csps_extraction/sql/select_organisations_data.sql` | Selects CSPS data, augmented by other canonical data. |
+| `csps_extraction/sql/compare_organisations_data.sql` | Replicates the collated organisations data from the CSPS working file, to be used as the basis for comparison in `compare_data.py`. |
 | `csps_extraction/compare_data.py` | Validates that the augmented SQL output matches the source Excel file. |
+| `csps_extraction/sql/select_organisations_data.sql` | Script to be used for (re-)insertion of augmented data into Excel. |
 
 ## Environment variables
 The scripts require the following environment variables to be set:

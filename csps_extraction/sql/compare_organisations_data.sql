@@ -1,10 +1,11 @@
 -- Replicates the collated data for the CSPS organisations data working file
--- As in `compare_organisations_data.sql`, with the following differences to columns:
-    -- 'Organisation type': Simplified (things of type aggregation/disaggregation/reporting totals reported as such, rather than being reported as 'Combination')
-    -- 'Organisation aggregation?': Removed
-    -- 'IfG core department': Added
-    -- 'Latest organisation': Latest actual organisation always reported, rather than latest determinate organisation
-    -- 'Latest departmental group': Latest actual (IfG) departmental group always reported, rather than latest determinate organisation
+-- NB: This turns all dates into 'periods', to facilitate temporal joins. These are defined as year * 4 + quarter, so e.g. 2020 Q4 becomes 2020 * 4 + 4 = 8084, with nulls set to 0 for start_period and the maximum integer that can be held in a SQL int column for end_period
+-- NB: survey_period in the CSPS data is set to year * 4 + 4, because all CSPS data is from quarter 4 of each year
+-- NB: Temporal joins use _between_, which includes both endpoints, because start/end year/quarters in civil_service.organisation are inclusive and non-overlapping. I.e. if an organisation ends in period N, it's successor starts in period N + 1
+-- NB: Join between `civil_service.organisation` and `civil_service.vw_organisation_departmental_group` needs to be a left join as organisation aggregations and disaggregations don't feature in `civil_service.vw_organisation_departmental_group`, by design
+-- NB: `case` statements do two things:
+    -- 1. `Organisation` column: Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
+    -- 2. (Specific to the CSPS organisations data) `Departmental group`, `Latest organisation`, `Latest IfG departmental group` columns: Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTables connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTables connections to collated datasets don't break
 with cspso as (
@@ -39,7 +40,14 @@ select
     cspso.headline_category [Headline category],
     cspso.year [Year],
     cspso.organisation_name [Organisation],
-    o_vicd_vodg.type [Organisation type],
+    case
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Y'
+        else null
+    end [Organisation aggregation?],
+    case
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation', 'Reporting total') then 'Combination'
+        else o_vicd_vodg.type
+    end [Organisation type],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
         when 'Cabinet Office group (including agencies)' then 'CO'
@@ -55,7 +63,6 @@ select
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
         else o_vicd_vodg.ifg_departmental_group_short_name
     end [Departmental group],
-    o_vicd_vodg.is_ifg_core_department [IfG core department],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
         when 'Cabinet Office group (including agencies)' then 'Cabinet Office group (including agencies)'
@@ -69,7 +76,11 @@ select
         when 'National Offender Management Service group (including agencies)' then 'National Offender Management Service group (including agencies)'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'UK Statistics Authority (excluding Office for National Statistics)'
-        else vol1.latest_organisation_name
+        else iif(
+            vol1.latest_organisation_name = 'Indeterminate',
+            vol1.latest_determinate_organisation_name,
+            vol1.latest_organisation_name
+        )
     end [Latest organisation],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
@@ -84,7 +95,11 @@ select
         when 'National Offender Management Service group (including agencies)' then 'MoJ'
         when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Various'
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
-        else vol2.latest_organisation_short_name
+        else iif(
+            vol2.latest_organisation_name = 'Indeterminate',
+            vol2.latest_determinate_organisation_short_name,
+            vol2.latest_organisation_short_name
+        )
     end [Latest departmental group],
     cspso.section [Section],
     cspso.measure [Measure],

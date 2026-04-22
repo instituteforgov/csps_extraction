@@ -1,13 +1,13 @@
 # %%
 """
     Purpose
-        Compare the output of select_organisations_data.sql with the 'Data.Collated'
+        Compare the output of compare_organisations_data.sql with the 'Data.Collated'
         worksheet of 'Organisation working file.xlsx', to validate that the SQL
         augmentation of extracted data matches the original source values.
     Inputs
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data
-        - sql: "select_organisations_data.sql"
+        - sql: "compare_organisations_data.sql"
             - Augmented CSPS organisations data
     Outputs
         - Printed comparison summary to console
@@ -15,7 +15,7 @@
         - This handles several expected differences between the two datasets. Namely that:
             - Certain columns only exist in one dataset:
                 - Excel: 'Organisation code', 'Departmental group (survey)', 'Release number'
-                - SQL: 'id', 'IfG core department'
+                - SQL: 'id'
             - Excel data has ' - <yyyy> iteration' suffixes in the Organisation and Latest organisation columns for certain organisations
             - For organisations that have left the civil service, Excel data gives Organisation as the value for Latest organisation, whereas SQL data gives 'Non-civil service'
 """
@@ -29,7 +29,7 @@ import pandas as pd
 # %%
 # SET CONSTANTS
 BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
-SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/sql/select_organisations_data.sql"
+SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/sql/compare_organisations_data.sql"
 
 # %%
 # CONNECT TO DATABASE
