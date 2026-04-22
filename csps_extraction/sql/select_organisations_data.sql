@@ -1,4 +1,5 @@
 -- Augments source data with IfG-derived organisation attributes
+-- NB: 'IfG core department' is recoded to 'Y'/'N' to make it more user-friendly
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
@@ -49,7 +50,7 @@ select
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
         else o_vicd_vodg.ifg_departmental_group_short_name
     end [Departmental group],
-    o_vicd_vodg.is_ifg_core_department [IfG core department],
+    iif(o_vicd_vodg.is_ifg_core_department = 1, 'Y', 'N') [IfG core department],
     case cspso.organisation_name
         when 'All employees' then 'All employees'
         when 'Cabinet Office group (including agencies)' then 'Cabinet Office group (including agencies)'
