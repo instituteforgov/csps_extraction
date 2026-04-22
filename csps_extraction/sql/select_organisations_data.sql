@@ -1,12 +1,6 @@
--- Replicates the collated data for the CSPS organisations data working file
--- As in `compare_organisations_data.sql`, with the following differences to columns:
-    -- 'Organisation type': Simplified (things of type aggregation/disaggregation/reporting totals reported as such, rather than being reported as 'Combination')
-    -- 'Organisation aggregation?': Removed
-    -- 'IfG core department': Added
-    -- 'Latest organisation': Latest actual organisation always reported, rather than latest determinate organisation
-    -- 'Latest departmental group': Latest actual (IfG) departmental group always reported, rather than latest determinate organisation
--- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTables connections to collated datasets don't break
--- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTables connections to collated datasets don't break
+-- Augments source data with IfG-derived organisation attributes
+-- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
+-- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
     select
         *,

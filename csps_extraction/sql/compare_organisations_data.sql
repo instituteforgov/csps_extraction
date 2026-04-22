@@ -6,8 +6,8 @@
 -- NB: `case` statements do two things:
     -- 1. `Organisation` column: Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
     -- 2. (Specific to the CSPS organisations data) `Departmental group`, `Latest organisation`, `Latest IfG departmental group` columns: Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
--- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTables connections to collated datasets don't break
--- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTables connections to collated datasets don't break
+-- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
+-- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
     select
         *,

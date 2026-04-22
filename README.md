@@ -32,7 +32,7 @@ pip install -r requirements.txt
 | `csps_extraction/extract_existing_data.py` | Reads existing CSPS data and saves to database. |
 | `csps_extraction/sql/compare_organisations_data.sql` | Replicates the collated organisations data from the CSPS working file, to be used as the basis for comparison in `compare_data.py`. |
 | `csps_extraction/compare_data.py` | Validates that the augmented SQL output matches the source Excel file. |
-| `csps_extraction/sql/select_organisations_data.sql` | Script to be used for (re-)insertion of augmented data into Excel. |
+| `csps_extraction/sql/select_organisations_data.sql` | Script to be used for (re-)insertion of augmented data into Excel. Duplicates `compare_organisations_data.sql`, with the following differences to columns: <ul><li><strong>Organisation type</strong>: Simplified (things of type 'Aggregation'/'Disaggregation'/'Reporting total' reported as such, rather than being reported as 'Combination')</li><li><strong>Organisation aggregation?</strong>: Removed</li><li><strong>IfG core department</strong>: Added</li><li><strong>Latest organisation</strong>: Latest actual organisation always reported, rather than latest determinate organisation</li><li><strong>Latest departmental group</strong>: Latest actual (IfG) departmental group always reported, rather than latest determinate organisation</li></ul> |
 
 ## Environment variables
 The scripts require the following environment variables to be set:
