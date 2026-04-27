@@ -2,6 +2,10 @@
 
 Scripts for extracting Civil Service People Survey (CSPS) data.
 
+## Related repositories
+
+- 🔓 [Civil service organisations](https://github.com/instituteforgov/cs_organisations/): Scripts for managing canonical civil service organisation data, used to augment the CSPS data with things like latest departmental groups
+
 ## Project structure
 
 ```
