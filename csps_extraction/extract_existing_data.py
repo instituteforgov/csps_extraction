@@ -21,11 +21,23 @@ import pandas as pd
 from sqlalchemy import DECIMAL, NVARCHAR, SMALLINT
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
-from csps_extraction.utils import resolve_org_id
+from csps_extraction.utils import normalise_column_names, resolve_org_id
 
 # %%
 # SET CONSTANTS
 BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
+SHEET_NAME = "Data.Collated"
+NA_VALUES = ["[c]", "[z]", "z"]
+CALCULATED_COLUMNS = [
+    "Organisation aggregation?",
+    "Release number",
+    "Departmental group",
+    "Organisation type",
+    "Latest organisation",
+    "Latest departmental group"
+]
+COLUMN_RENAMES = {"organisation": "organisation_name"}
+INSERT_ORG_ID_BEFORE_COL = "Organisation code"
 SURVEY_QUARTER = 4
 
 # %%
@@ -44,7 +56,7 @@ engine = dbo.connect_sql_db(
 # %%
 # READ IN DATA
 # NB: Sets non-numeric values to NaN
-df_csps = pd.read_excel(BASE_PATH, sheet_name="Data.Collated", na_values=["[c]", "[z]", "z"])
+df_csps = pd.read_excel(BASE_PATH, sheet_name=SHEET_NAME, na_values=NA_VALUES)
 
 # %%
 # EDIT DATA
@@ -55,20 +67,15 @@ df_csps = df_csps.dropna(subset=["Organisation"])
 df_csps.insert(0, "id", [str(uuid.uuid4()) for _ in range(len(df_csps))])
 
 # Drop calculated columns
-df_csps = df_csps.drop(columns=[
-    "Organisation aggregation?",
-    "Release number",
-    "Departmental group",
-    "Organisation type",
-    "Latest organisation",
-    "Latest departmental group"
-])
+df_csps = df_csps.drop(columns=CALCULATED_COLUMNS)
 
 # Normalise column names to snake_case
-df_csps.columns = df_csps.columns.str.lower().str.replace(r"[^\w\s]", "", regex=True).str.replace(r"\s+", "_", regex=True).str.strip("_")
+df_csps.columns = [normalise_column_names(col) for col in df_csps.columns]
+_insert_before = normalise_column_names(INSERT_ORG_ID_BEFORE_COL)
 
-# Rename 'organisation' to 'organisation_name'
-df_csps = df_csps.rename(columns={"organisation": "organisation_name"})
+# Rename columns
+df_csps = df_csps.rename(columns=COLUMN_RENAMES)
+_insert_before = COLUMN_RENAMES.get(_insert_before, _insert_before)
 
 # Drop ' - <yyyy> iteration' strings from organisation names that have been reused (e.g. "Department for Culture, Media and Sport - 2017 iteration" becomes "Department for Culture, Media and Sport")
 df_csps["organisation_name"] = df_csps["organisation_name"].str.replace(r"\s*-\s*\d{4}\s*iteration\s*", "", regex=True)
@@ -90,7 +97,7 @@ df_organisation = pd.read_sql(
 )
 
 df_csps.insert(
-    df_csps.columns.get_loc("organisation_code"),
+    df_csps.columns.get_loc(_insert_before),
     "organisation_id",
     resolve_org_id(df_csps, df_organisation, quarter_col=SURVEY_QUARTER)
 )
