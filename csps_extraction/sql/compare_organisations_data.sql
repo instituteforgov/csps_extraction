@@ -3,9 +3,7 @@
 -- NB: survey_period in the CSPS data is set to year * 4 + 4, because all CSPS data is from quarter 4 of each year
 -- NB: Temporal joins use _between_, which includes both endpoints, because start/end year/quarters in civil_service.organisation are inclusive and non-overlapping. I.e. if an organisation ends in period N, it's successor starts in period N + 1
 -- NB: Join between `civil_service.organisation` and `civil_service.vw_organisation_departmental_group` needs to be a left join as organisation aggregations and disaggregations don't feature in `civil_service.vw_organisation_departmental_group`, by design
--- NB: `case` statements do two things:
-    -- 1. `Organisation` column: Add ' - <yyyy> iteration' strings that were cleaned as part of the extraction and loading of the data into the database back in to organisation names, to facilitate comparison between the collated data generated using this script and that in the original working file
-    -- 2. (Specific to the CSPS organisations data) `Departmental group`, `Latest organisation`, `Latest IfG departmental group` columns: Handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
+-- NB: `case` statements handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
