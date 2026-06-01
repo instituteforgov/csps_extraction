@@ -29,6 +29,8 @@ import pandas as pd
 # %%
 # SET CONSTANTS
 BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
+SHEET_NAME = "Data.Collated"
+NA_VALUES = ["[c]", "[z]", "z"]
 SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/sql/compare_organisations_data.sql"
 
 # %%
@@ -46,7 +48,7 @@ engine = dbo.connect_sql_db(
 
 # %%
 # READ IN DATA
-df_excel = pd.read_excel(BASE_PATH, sheet_name="Data.Collated", na_values=["[c]", "[z]", "z"])
+df_excel = pd.read_excel(BASE_PATH, sheet_name=SHEET_NAME, na_values=NA_VALUES)
 
 with open(SQL_PATH, encoding="utf-8") as f:
     sql = f.read()
