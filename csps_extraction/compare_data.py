@@ -31,6 +31,7 @@ import pandas as pd
 BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
 SHEET_NAME = "Data.Collated"
 NA_VALUES = ["[c]", "[z]", "z"]
+KEY_COLS = ["Headline category", "Year", "Organisation", "Section", "Measure", "Label", "Answer format"]
 SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/sql/compare_organisations_data.sql"
 
 # %%
@@ -117,13 +118,11 @@ print(f"Columns only in SQL: {cols_sql_only}")
 
 # %%
 # Compare keys (i.e. values which uniquely identify rows)
-key_cols = ["Headline category", "Year", "Organisation", "Section", "Measure", "Label", "Answer format"]
-
 assert len(df_sql) == len(df_excel), (
     f"Row count mismatch before merge: SQL has {len(df_sql)} rows, Excel has {len(df_excel)} rows."
 )
 
-df_merged = df_sql.merge(df_excel, on=key_cols, how="outer", suffixes=("_sql", "_excel"), indicator=True)
+df_merged = df_sql.merge(df_excel, on=KEY_COLS, how="outer", suffixes=("_sql", "_excel"), indicator=True)
 rows_in_both = df_merged[df_merged["_merge"] == "both"]
 rows_excel_only = df_merged[df_merged["_merge"] == "right_only"]
 rows_sql_only = df_merged[df_merged["_merge"] == "left_only"]
@@ -138,7 +137,7 @@ assert len(df_merged) == len(df_sql), (
 
 # %%
 # Compare values for matched rows
-value_cols = [col for col in df_excel.columns if col in cols_in_both and col not in key_cols]
+value_cols = [col for col in df_excel.columns if col in cols_in_both and col not in KEY_COLS]
 
 mismatch_masks = {}
 for col in value_cols:
@@ -168,7 +167,7 @@ if mismatch_masks:
         sql_col = f"{col}_sql"
         excel_col = f"{col}_excel"
         if col == "Value":
-            preview = rows_in_both.loc[mask, key_cols + [sql_col, excel_col]].reset_index(drop=True)
+            preview = rows_in_both.loc[mask, KEY_COLS + [sql_col, excel_col]].reset_index(drop=True)
         else:
             preview = (
                 rows_in_both.loc[mask, ["Year", "Organisation", sql_col, excel_col]]
