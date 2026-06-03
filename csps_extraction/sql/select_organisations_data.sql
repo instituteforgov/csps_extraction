@@ -1,4 +1,5 @@
 -- Augments source data with IfG-derived organisation attributes
+-- See README for an explanation of differences between the compare_organisations_data.sql script and this one
 -- NB: 'IfG core department' is recoded to 'Y'/'N' to make it more user-friendly
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
@@ -51,19 +52,8 @@ select
         else o_vicd_vodg.ifg_departmental_group_short_name
     end [Departmental group],
     iif(o_vicd_vodg.is_ifg_core_department = 1, 'Y', 'N') [IfG core department],
-    case cspso.organisation_name
-        when 'All employees' then 'All employees'
-        when 'Cabinet Office group (including agencies)' then 'Cabinet Office group (including agencies)'
-        when 'Civil Service benchmark' then 'Civil Service benchmark'
-        when 'Department for Education group (including agencies)' then 'Department for Education group (including agencies)'
-        when 'Department for Work and Pensions, Jobcentre Plus and Pensions & Disability Carers Service' then 'Department for Work and Pensions, Jobcentre Plus and Pensions & Disability Carers Service'
-        when 'Historic Scotland and the Royal Commission on the Ancient and Historic Monuments of Scotland' then 'Historic Scotland and the Royal Commission on the Ancient and Historic Monuments of Scotland'
-        when 'HM Prison and Probation Service (excluding HM Prison Service and National Probation Service/Probation Service)' then 'HM Prison and Probation Service (excluding HM Prison Service and National Probation Service/Probation Service)'
-        when 'Ministry of Justice arm''s length bodies' then 'Ministry of Justice arm''s length bodies'
-        when 'Ministry of Justice group (including agencies)' then 'Ministry of Justice group (including agencies)'
-        when 'National Offender Management Service group (including agencies)' then 'National Offender Management Service group (including agencies)'
-        when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland'
-        when 'UK Statistics Authority (excluding Office for National Statistics)' then 'UK Statistics Authority (excluding Office for National Statistics)'
+    case
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation') then cspso.organisation_name
         else vol1.latest_organisation_name
     end [Latest organisation],
     case cspso.organisation_name

@@ -3,8 +3,19 @@
 -- NB: survey_period in the CSPS data is set to year * 4 + 4, because all CSPS data is from quarter 4 of each year
 -- NB: Temporal joins use _between_, which includes both endpoints, because start/end year/quarters in civil_service.organisation are inclusive and non-overlapping. I.e. if an organisation ends in period N, it's successor starts in period N + 1
 -- NB: Join between `civil_service.organisation` and `civil_service.vw_organisation_departmental_group` needs to be a left join as organisation aggregations and disaggregations don't feature in `civil_service.vw_organisation_departmental_group`, by design
--- NB: `case` statements handle organisations with type 'Aggregation' or 'Disaggregation' that feature in the source data, as these don't feature in civil_service.vw_organisation_departmental_group and civil_service.vw_organisation_latest
+-- NB: `case` statements handle organisations that we're now classifying with type:
+    -- 'Reporting total' ('All employees' and 'Civil Service Benchmark'), as these are reported as having:
+        -- ❌ Organisation type: 'Combination' (Excel) vs 'Reporting total' (SQL)
+        -- ❌ Departmental group short name: Organisation name (Excel) vs null (SQL), as we haven't set short names for things of type 'Reporting total'
+        -- ✅ Latest organisation name: Organisation name (Excel) vs organisation name (SQL)
+        -- ❌ Latest departmental group short name: Organisation name (Excel) vs null (SQL), as we haven't set short names for things of type 'Reporting total'
+    -- 'Aggregation' or 'Disaggregation' (various organisations), as these are reported as having:
+        -- ❌ Organisation type: 'Combination' (Excel) vs 'Aggregation' or 'Disaggregation' (SQL)
+        -- ❌ Departmental group short name: Departmental group name (Excel) vs null (SQL), as we haven't set short names for things of type 'Aggregation' or 'Disaggregation'
+        -- ❌ Latest organisation name: Organisation name (Excel) vs null (SQL), as we haven't set latest organisations for things of type 'Aggregation' or 'Disaggregation'
+        -- ❌ Latest departmental group short name: Departmental group name (Excel) vs null (SQL), as we haven't set latest organisations for things of type 'Aggregation' or 'Disaggregation'
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
+-- NB: 'IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
     select
@@ -61,19 +72,8 @@ select
         when 'UK Statistics Authority (excluding Office for National Statistics)' then 'CO'
         else o_vicd_vodg.ifg_departmental_group_short_name
     end [Departmental group],
-    case cspso.organisation_name
-        when 'All employees' then 'All employees'
-        when 'Cabinet Office group (including agencies)' then 'Cabinet Office group (including agencies)'
-        when 'Civil Service benchmark' then 'Civil Service benchmark'
-        when 'Department for Education group (including agencies)' then 'Department for Education group (including agencies)'
-        when 'Department for Work and Pensions, Jobcentre Plus and Pensions & Disability Carers Service' then 'Department for Work and Pensions, Jobcentre Plus and Pensions & Disability Carers Service'
-        when 'Historic Scotland and the Royal Commission on the Ancient and Historic Monuments of Scotland' then 'Historic Scotland and the Royal Commission on the Ancient and Historic Monuments of Scotland'
-        when 'HM Prison and Probation Service (excluding HM Prison Service and National Probation Service/Probation Service)' then 'HM Prison and Probation Service (excluding HM Prison Service and National Probation Service/Probation Service)'
-        when 'Ministry of Justice arm''s length bodies' then 'Ministry of Justice arm''s length bodies'
-        when 'Ministry of Justice group (including agencies)' then 'Ministry of Justice group (including agencies)'
-        when 'National Offender Management Service group (including agencies)' then 'National Offender Management Service group (including agencies)'
-        when 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland' then 'Scotland, Wales and Northern Ireland Offices, and the Office of the Advocate General for Scotland'
-        when 'UK Statistics Authority (excluding Office for National Statistics)' then 'UK Statistics Authority (excluding Office for National Statistics)'
+    case
+        when o_vicd_vodg.type in ('Aggregation', 'Disaggregation') then cspso.organisation_name
         else iif(
             vol1.latest_organisation_name = 'Indeterminate',
             vol1.latest_determinate_organisation_name,
