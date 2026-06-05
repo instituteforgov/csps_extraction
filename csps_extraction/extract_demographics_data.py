@@ -71,7 +71,7 @@ df_csps.to_sql(
         "measure": NVARCHAR(20),
         "label": NVARCHAR(300),
         "count": INT,
-        "value": DECIMAL(12, 6),
+        "value": DECIMAL(21, 15),
         "answer_format": NVARCHAR(200),
         "based_on": NVARCHAR(200),
         "notes": NVARCHAR(200),
