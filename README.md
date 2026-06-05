@@ -50,6 +50,8 @@ pip install -r requirements.txt
 | `csps_extraction/compare_organisations_data.py` | Validates that the augmented SQL organisations data matches the source Excel file. |
 | `csps_extraction/sql/select_organisations_data.sql` | Script to be used for (re-)insertion of augmented data into Excel. Duplicates `compare_organisations_data.sql`, with the following differences to columns: <ul><li><strong>Organisation type</strong>: Reported as is</li><li><strong>Organisation aggregation?</strong>: Removed</li><li><strong>IfG core department</strong>: Added</li><li><strong>Latest organisation</strong>: Latest actual organisation always reported, rather than latest determinate organisation</li><li><strong>Latest departmental group</strong>: Latest actual (IfG) departmental group always reported, rather than latest determinate organisation</li></ul> |
 
+NB: There aren't `select_benchmarks_data.sql` and `select_demographics_data.sql` scripts, as the benchmarks and demographics data are not augmented with any additional information, so data can be retrieved by querying the respective tables directly.
+
 ## Environment variables
 The scripts require the following environment variables to be set:
 
