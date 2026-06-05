@@ -1,9 +1,7 @@
 # %%
 """
     Purpose
-        Compare the output of compare_organisations_data.sql with the 'Data.Collated'
-        worksheet of 'Organisation working file.xlsx', to validate that the SQL
-        augmentation of extracted data matches the original source values.
+        Compare the output of compare_organisations_data.sql with the 'Data.Collated' worksheet of 'Organisation working file.xlsx', to validate that the SQL augmentation of extracted data matches the original source values.
     Inputs
         - xlsx: "Organisation working file.xlsx"
             - Collated CSPS organisations data

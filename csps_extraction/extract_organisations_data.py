@@ -14,7 +14,6 @@
 """
 
 import os
-import uuid
 
 from cs_organisations.resolve import resolve_org_id
 import ds_utils.database_operations as dbo
@@ -22,7 +21,7 @@ import pandas as pd
 from sqlalchemy import DECIMAL, NVARCHAR, SMALLINT
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
-from csps_extraction.utils import normalise_column_names
+from csps_extraction.utils import normalise_column_names, prepare_csps_data
 
 # %%
 # SET CONSTANTS
@@ -56,35 +55,12 @@ engine = dbo.connect_sql_db(
 
 # %%
 # READ IN DATA
+
+# CSPS data
 # NB: Sets non-numeric values to NaN
 df_csps = pd.read_excel(BASE_PATH, sheet_name=SHEET_NAME, na_values=NA_VALUES)
 
-# %%
-# EDIT DATA
-# Drop rows where 'Organisation' is blank
-df_csps = df_csps.dropna(subset=["Organisation"])
-
-# Add UUID columns
-df_csps.insert(0, "id", [str(uuid.uuid4()) for _ in range(len(df_csps))])
-
-# Drop calculated columns
-df_csps = df_csps.drop(columns=CALCULATED_COLUMNS)
-
-# Normalise column names to snake_case
-df_csps.columns = [normalise_column_names(col) for col in df_csps.columns]
-_insert_before = normalise_column_names(INSERT_ORG_ID_BEFORE_COL)
-
-# Rename columns
-df_csps = df_csps.rename(columns=COLUMN_RENAMES)
-_insert_before = COLUMN_RENAMES.get(_insert_before, _insert_before)
-
-# Drop ' - <yyyy> iteration' strings from organisation names that have been reused (e.g. "Department for Culture, Media and Sport - 2017 iteration" becomes "Department for Culture, Media and Sport")
-df_csps["organisation_name"] = df_csps["organisation_name"].str.replace(r"\s*-\s*\d{4}\s*iteration\s*", "", regex=True)
-
-# %%
-# Resolve organisation ids
-# Temporally match each row's organisation name and year to civil_service.organisation.
-# Rows that don't match (e.g. aggregations like "Civil Service benchmark") remain NULL.
+# Canonical organisations data
 df_organisation = pd.read_sql(
     """select
         o.id,
@@ -97,10 +73,35 @@ df_organisation = pd.read_sql(
     engine
 )
 
+# %%
+# PREPARE DATA
+# Drop rows where 'Organisation' is blank
+df_csps = df_csps.dropna(subset=["Organisation"])
+
+df_csps = prepare_csps_data(
+    df_csps,
+    calculated_columns=CALCULATED_COLUMNS,
+    column_renames=COLUMN_RENAMES,
+)
+
+# Drop ' - <yyyy> iteration' strings from organisation names that have been reused
+# (e.g. "Department for Culture, Media and Sport - 2017 iteration" becomes
+# "Department for Culture, Media and Sport")
+df_csps["organisation_name"] = df_csps["organisation_name"].str.replace(
+    r"\s*-\s*\d{4}\s*iteration\s*", "", regex=True
+)
+
+# %%
+# RESOLVE ORGANISATION IDs
+# Temporally match each row's organisation name and year to civil_service.organisation.
+# Rows that don't match (e.g. aggregations like "Civil Service benchmark") remain NULL.
+_insert_before = normalise_column_names(INSERT_ORG_ID_BEFORE_COL)
+_insert_before = COLUMN_RENAMES.get(_insert_before, _insert_before)
+
 df_csps.insert(
     df_csps.columns.get_loc(_insert_before),
     "organisation_id",
-    resolve_org_id(df_csps, df_organisation, quarter_col=SURVEY_QUARTER)
+    resolve_org_id(df_csps, df_organisation, quarter_col=SURVEY_QUARTER),
 )
 
 # %%
