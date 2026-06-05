@@ -16,12 +16,13 @@
 import os
 import uuid
 
+from cs_organisations.resolve import resolve_org_id
 import ds_utils.database_operations as dbo
 import pandas as pd
 from sqlalchemy import DECIMAL, NVARCHAR, SMALLINT
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
-from csps_extraction.utils import normalise_column_names, resolve_org_id
+from csps_extraction.utils import normalise_column_names
 
 # %%
 # SET CONSTANTS
