@@ -11,9 +11,13 @@ Scripts for extracting Civil Service People Survey (CSPS) data.
 ```
 ├── csps_extraction/
 │   ├── sql/
+│   │   ├── compare_benchmarks_data.sql
+│   │   ├── compare_demographics_data.sql
 │   │   ├── compare_organisations_data.sql
 │   │   ├── select_organisations_data.sql
-│   ├── compare_data.py
+│   ├── compare_benchmarks_data.py
+│   ├── compare_demographics_data.py
+│   ├── compare_organisations_data.py
 │   ├── extract_benchmarks_data.py
 │   ├── extract_demographics_data.py
 │   ├── extract_organisations_data.py
@@ -38,8 +42,12 @@ pip install -r requirements.txt
 | `csps_extraction/extract_benchmarks_data.py` | Reads existing CSPS benchmarks data and saves to database. |
 | `csps_extraction/extract_demographics_data.py` | Reads existing CSPS demographics data and saves to database. |
 | `csps_extraction/extract_organisations_data.py` | Reads existing CSPS organisations data and saves to database. |
-| `csps_extraction/sql/compare_organisations_data.sql` | Replicates the collated organisations data from the CSPS working file, to be used as the basis for comparison in `compare_data.py`. |
-| `csps_extraction/compare_data.py` | Validates that the augmented SQL output matches the source Excel file. |
+| `csps_extraction/sql/compare_benchmarks_data.sql` | Replicates the collated benchmarks data from the CSPS working file, to be used as the basis for comparison in `compare_benchmarks_data.py`. |
+| `csps_extraction/compare_benchmarks_data.py` | Validates that the SQL benchmarks data matches the source Excel file. |
+| `csps_extraction/sql/compare_demographics_data.sql` | Replicates the collated demographics data from the CSPS working file, to be used as the basis for comparison in `compare_demographics_data.py`. |
+| `csps_extraction/compare_demographics_data.py` | Validates that the SQL demographics data matches the source Excel file. |
+| `csps_extraction/sql/compare_organisations_data.sql` | Replicates the collated organisations data from the CSPS working file, to be used as the basis for comparison in `compare_organisations_data.py`. |
+| `csps_extraction/compare_organisations_data.py` | Validates that the augmented SQL organisations data matches the source Excel file. |
 | `csps_extraction/sql/select_organisations_data.sql` | Script to be used for (re-)insertion of augmented data into Excel. Duplicates `compare_organisations_data.sql`, with the following differences to columns: <ul><li><strong>Organisation type</strong>: Reported as is</li><li><strong>Organisation aggregation?</strong>: Removed</li><li><strong>IfG core department</strong>: Added</li><li><strong>Latest organisation</strong>: Latest actual organisation always reported, rather than latest determinate organisation</li><li><strong>Latest departmental group</strong>: Latest actual (IfG) departmental group always reported, rather than latest determinate organisation</li></ul> |
 
 ## Environment variables

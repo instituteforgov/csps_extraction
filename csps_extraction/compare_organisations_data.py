@@ -21,8 +21,9 @@
 import os
 
 import ds_utils.database_operations as dbo
-from IPython.display import display
 import pandas as pd
+
+from csps_extraction.utils import compare_dataframes
 
 # %%
 # SET CONSTANTS
@@ -104,77 +105,6 @@ df_sql["Latest organisation"] = df_sql.apply(
 
 # %%
 # COMPARE DATA
-# Compare columns
-df_excel_cols = set(df_excel.columns)
-df_sql_cols = set(df_sql.columns)
-cols_in_both = [col for col in df_excel.columns if col in df_sql_cols]
-cols_excel_only = [col for col in df_excel.columns if col not in df_sql_cols]
-cols_sql_only = [col for col in df_sql.columns if col not in df_excel_cols]
-print(f"Columns in both sources: {cols_in_both}")
-print(f"Columns only in Excel: {cols_excel_only}")
-print(f"Columns only in SQL: {cols_sql_only}")
-
-# %%
-# Compare keys (i.e. values which uniquely identify rows)
-assert len(df_sql) == len(df_excel), (
-    f"Row count mismatch before merge: SQL has {len(df_sql)} rows, Excel has {len(df_excel)} rows."
-)
-
-df_merged = df_sql.merge(df_excel, on=KEY_COLS, how="outer", suffixes=("_sql", "_excel"), indicator=True)
-rows_in_both = df_merged[df_merged["_merge"] == "both"]
-rows_excel_only = df_merged[df_merged["_merge"] == "right_only"]
-rows_sql_only = df_merged[df_merged["_merge"] == "left_only"]
-print(f"Rows in both sources: {len(rows_in_both)}")
-print(f"Rows only in Excel: {len(rows_excel_only)}")
-print(f"Rows only in SQL: {len(rows_sql_only)}")
-
-assert len(df_merged) == len(df_sql), (
-    f"Merged row count ({len(df_merged)}) differs from source row count ({len(df_sql)}). "
-    f"{len(rows_excel_only)} Excel-only and {len(rows_sql_only)} SQL-only rows."
-)
-
-# %%
-# Compare values for matched rows
-value_cols = [col for col in df_excel.columns if col in cols_in_both and col not in KEY_COLS]
-
-mismatch_masks = {}
-for col in value_cols:
-    sql_col = f"{col}_sql"
-    excel_col = f"{col}_excel"
-    if sql_col in rows_in_both.columns and excel_col in rows_in_both.columns:
-        if col == "Value":
-            sql_series = pd.to_numeric(rows_in_both[sql_col], errors="coerce")
-            excel_series = pd.to_numeric(rows_in_both[excel_col], errors="coerce")
-            match_mask = (
-                (sql_series - excel_series).abs().lt(1e-9)
-                | (sql_series.isna() & excel_series.isna())
-            )
-        else:
-            sql_series = rows_in_both[sql_col]
-            excel_series = rows_in_both[excel_col]
-            match_mask = (
-                (sql_series == excel_series)
-                | (rows_in_both[sql_col].isna() & rows_in_both[excel_col].isna())
-            )
-        if (~match_mask).any():
-            mismatch_masks[col] = ~match_mask
-
-if mismatch_masks:
-    display({col: int(mask.sum()) for col, mask in mismatch_masks.items()})
-    for col, mask in mismatch_masks.items():
-        sql_col = f"{col}_sql"
-        excel_col = f"{col}_excel"
-        if col == "Value":
-            preview = rows_in_both.loc[mask, KEY_COLS + [sql_col, excel_col]].reset_index(drop=True)
-        else:
-            preview = (
-                rows_in_both.loc[mask, ["Year", "Organisation", sql_col, excel_col]]
-                .drop_duplicates()
-                .reset_index(drop=True)
-            )
-        print(f"Mismatches in '{col}':")
-        display(preview)
-else:
-    print("No value mismatches in matched rows")
+compare_dataframes(df_excel, df_sql, KEY_COLS)
 
 # %%
