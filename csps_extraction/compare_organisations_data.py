@@ -1,9 +1,9 @@
 # %%
 """
     Purpose
-        Compare the output of compare_organisations_data.sql with the 'Data.Collated' worksheet of 'Organisation working file.xlsx', to validate that the SQL augmentation of extracted data matches the original source values.
+        Compare the output of compare_organisations_data.sql with the 'Data.Collated' worksheet of 'Organisations working file.xlsx', to validate that the SQL augmentation of extracted data matches the original source values.
     Inputs
-        - xlsx: "Organisation working file.xlsx"
+        - xlsx: "Organisations working file.xlsx"
             - Collated CSPS organisations data
         - sql: "compare_organisations_data.sql"
             - Augmented CSPS organisations data
@@ -27,7 +27,7 @@ from csps_extraction.utils import compare_dataframes
 
 # %%
 # SET CONSTANTS
-BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
+BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisations working file.xlsx"
 SHEET_NAME = "Data.Collated"
 NA_VALUES = ["[c]", "[z]", "z"]
 KEY_COLS = ["Headline category", "Year", "Organisation", "Section", "Measure", "Label", "Answer format"]

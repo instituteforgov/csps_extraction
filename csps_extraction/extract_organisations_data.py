@@ -3,7 +3,7 @@
     Purpose
         Extract existing CSPS organisations data and save to database.
     Inputs
-        - xlsx: "Organisation working file.xlsx"
+        - xlsx: "Organisations working file.xlsx"
             - Collated CSPS organisations data
         - sql: civil_service.organisation
             - Canonical civil service organisation details
@@ -25,7 +25,7 @@ from csps_extraction.utils import normalise_column_names, prepare_csps_data
 
 # %%
 # SET CONSTANTS
-BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisation working file.xlsx"
+BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Organisations working file.xlsx"
 SHEET_NAME = "Data.Collated"
 NA_VALUES = ["[c]", "[z]", "z"]
 CALCULATED_COLUMNS = [
