@@ -20,7 +20,7 @@ import os
 import ds_utils.database_operations as dbo
 import pandas as pd
 
-from csps_extraction.utils import compare_dataframes
+from cs_data_utils.utils import compare_dataframes
 
 # %%
 # SET CONSTANTS
