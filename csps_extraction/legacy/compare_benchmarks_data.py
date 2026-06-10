@@ -28,7 +28,7 @@ BASE_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - Gene
 SHEET_NAME = "Data.Collated"
 NA_VALUES = ["[z]"]
 KEY_COLS = ["Headline category", "Year", "Section", "Measure", "Label", "Answer format"]
-SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/sql/compare_benchmarks_data.sql"
+SQL_PATH = "C:/Users/" + os.getlogin() + "/INSTITUTE FOR GOVERNMENT/Data - General/Civil service/Civil Service - People Survey/Scripts/Extraction/csps_extraction/legacy/sql/compare_benchmarks_data.sql"
 
 # %%
 # CONNECT TO DATABASE
