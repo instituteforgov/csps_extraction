@@ -1,3 +1,4 @@
+cs_data_utils @ git+https://github.com/instituteforgov/cs_data_utils
 cs_organisations @ git+https://github.com/instituteforgov/cs_organisations
 ds_utils @ git+https://github.com/philipnye/ds_utils@8df63ddf92ace9f7bc16fd5ef8598641f4c4b0ec
 openpyxl==3.1.5

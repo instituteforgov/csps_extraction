@@ -1,19 +1,8 @@
-import re
 import uuid
 
+from cs_data_utils.utils import normalise_column_names
 from IPython.display import display
 import pandas as pd
-
-
-def normalise_column_names(col_name):
-    """Normalises column names to snake_case and removes special characters.
-
-    Args:
-        col_name (str): The original column name.
-    Returns:
-        str: The normalised column name.
-    """
-    return re.sub(r"\s+", "_", re.sub(r"[^\w\s]", "", col_name.lower())).strip("_")
 
 
 def prepare_csps_data(

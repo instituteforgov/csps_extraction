@@ -21,7 +21,8 @@ import pandas as pd
 from sqlalchemy import DECIMAL, NVARCHAR, SMALLINT
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
-from csps_extraction.utils import normalise_column_names, prepare_csps_data
+from cs_data_utils.utils import normalise_column_names
+from csps_extraction.utils import prepare_csps_data
 
 # %%
 # SET CONSTANTS
