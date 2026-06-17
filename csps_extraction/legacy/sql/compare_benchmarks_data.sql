@@ -1,6 +1,6 @@
 -- Replicates the collated data for the CSPS benchmarks working file
 select
-    cspsb.id,
+    cspsb.id ID,
     cspsb.headline_category [Headline category],
     cspsb.year [Year],
     cspsb.section [Section],

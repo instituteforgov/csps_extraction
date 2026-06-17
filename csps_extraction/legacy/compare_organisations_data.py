@@ -13,7 +13,7 @@
         - This handles several expected differences between the two datasets. Namely that:
             - Certain columns only exist in one dataset:
                 - Excel: 'Organisation code', 'Departmental group (survey)', 'Release number'
-                - SQL: 'id'
+                - SQL: 'ID'
             - Excel data has ' - <yyyy> iteration' suffixes in the Organisation and Latest organisation columns for certain organisations
             - For organisations that have left the civil service, Excel data gives Organisation as the value for Latest organisation, whereas SQL data gives 'Non-civil service'
 """

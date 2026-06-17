@@ -12,7 +12,7 @@
     Notes
         - This handles several expected differences between the two datasets. Namely that:
             - Certain columns only exist in one dataset:
-                - SQL: 'id'
+                - SQL: 'ID'
 """
 
 import os

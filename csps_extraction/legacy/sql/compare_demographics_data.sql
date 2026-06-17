@@ -1,6 +1,6 @@
 -- Replicates the collated data for the CSPS demographics working file
 select
-    cspsd.id,
+    cspsd.id ID,
     cspsd.headline_category [Headline category],
     cspsd.year [Year],
     cspsd.demographic_variable [Demographic variable],
