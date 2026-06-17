@@ -15,7 +15,7 @@
         -- ❌ Latest organisation name: Organisation name (Excel) vs null (SQL), as we haven't set latest organisations for things of type 'Aggregation' or 'Disaggregation'
         -- ❌ Latest departmental group short name: Departmental group name (Excel) vs null (SQL), as we haven't set latest organisations for things of type 'Aggregation' or 'Disaggregation'
 -- NB: 'Organisation name' is renamed 'Organisation', so that existing PivotTable connections to collated datasets don't break
--- NB: 'IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
+-- NB: 'IfG departmental group' is renamed 'Departmental group', so that existing PivotTable connections to collated datasets don't break
 -- NB: 'Latest IfG departmental group' is renamed 'Latest departmental group', so that existing PivotTable connections to collated datasets don't break
 with cspso as (
     select
